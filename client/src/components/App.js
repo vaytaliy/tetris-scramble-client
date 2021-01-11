@@ -1,38 +1,26 @@
-import React from 'react';
-import io from 'socket.io-client';
+import axios from 'axios';
+import React, {useState} from 'react';
+import Registration from './Registration';
+import Login from './Login';
+import join from '../game/online/publicRoom';
 
-let socket = io();
-let timeout;
-
-function tryJoinPublicRoom() {
-    socket.emit('publicRoom');
-}
-
-socket.on('attemptPublicReconnect', () => {
-    console.log('trying to find players..');
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-        socket.emit('publicRoom');
-    }, 1000)
-})
-
-socket.on('matchmakingSuccess', data => {
-    clearTimeout(timeout);
-    console.log('success connect');
-    socket.emit('initGame', data.roomId);
-})
-
-socket.on('opponentQuit', data => {
-    console.log(data.message);
-})
+//[TBD]
+// throw connecting to game logic into separate module
+//
+//
+//
 
 const App = () => {
+    
+    
     return (
         <div>
             This is the root container for other components
-            <button onClick={tryJoinPublicRoom()}>Test connect</button>
+            <button onClick={join}>Test connect</button>   
+            <Registration />
+            <Login />
         </div>
-    )
-}
+    );
+};
 
 export default App;
