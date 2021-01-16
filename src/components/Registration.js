@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import rootAddress from './../configuration/proxy';
+//import rootAddress from './../configuration/proxy';
 
 const Registration = () => {
     const [usernameInput, setUsernameInput] = useState('');
@@ -15,7 +15,7 @@ const Registration = () => {
     }
 
     const sendRegisterUserForm = async () => {
-        const res = await axios.post(`${rootAddress}/register`,
+        const res = await axios.post(`/register`,
             {
                 username: usernameInput,
                 password: passwordInput
