@@ -28,8 +28,8 @@ const Registration = () => {
             },
             body: JSON.stringify(user)
         });
-        const parsedRes = await JSON.parse(res);
-        console.log(parsedRes);
+        //const parsedRes = await JSON.parse(res);
+        console.log(res);
         
         
         // const res = await axios.post(`${rootAddress}/register`,          //axios implementation
