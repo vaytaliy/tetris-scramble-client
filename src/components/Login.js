@@ -11,7 +11,7 @@ const Login = () => {
 
     useEffect(() => {
         const getRoot = async () => {
-            const res = await axios.get(`${rootAddress}/`, {withCredentials: true})
+            const res = await axios.get(`${rootAddress}/`)
             const username = res.data.user;
             setUserName(username);
         }
@@ -31,7 +31,7 @@ const Login = () => {
             {
                 username: usernameInput,
                 password: passwordInput
-            }, { withCredentials: true })
+            })
         console.log(res);
         const username = res.data.user;
         setUserName(username);
