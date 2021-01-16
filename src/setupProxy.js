@@ -1,11 +1,10 @@
-import { createProxyMiddleware } from 'http-proxy-middleware';
-import rootAddress from './configuration/proxy';
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
-export default app => {
+module.exports = app => {
   app.use(
     '**',
     createProxyMiddleware({
-      target: rootAddress,
+      target: 'https://tetris-scramble-server.herokuapp.com',
       changeOrigin: true,
     })
   );
