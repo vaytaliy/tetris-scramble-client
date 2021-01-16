@@ -22,6 +22,7 @@ const Registration = () => {
         
         const res = await fetch(`${rootAddress}/register`, {
             method: 'POST',
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
