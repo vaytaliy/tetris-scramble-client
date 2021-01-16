@@ -12,7 +12,8 @@ router.post('/register', async (req, res) => {
     const username = req.body.username.toString();
     const hashedPassword = await hashPassword(req.body.password);         //some description on how encryption works
     const foundUser = await db.queryTable('SELECT * FROM registered_users WHERE username = $1', [username])
-    if (!foundUser) {
+    const firstFound = foundUser.rows[0];
+    if (!firstFound) {
         await db.queryTable('INSERT INTO registered_users (user_id, username, password) VALUES (DEFAULT, $1, $2)', [username, hashedPassword]); 
         return res.json({ message: 'user registered', code: 200 })
     } else {
