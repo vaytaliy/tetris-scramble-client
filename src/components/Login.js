@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-//import rootAddress from './../configuration/proxy';
+import rootAddress from './../configuration/proxy';
 
 const Login = () => {
     const [usernameInput, setUsernameInput] = useState('');
@@ -11,7 +11,7 @@ const Login = () => {
 
     useEffect(() => {
         const getRoot = async () => {
-            const res = await axios.get(`/`, {withCredentials: true})
+            const res = await axios.get(`${rootAddress}/`, {withCredentials: true})
             const username = res.data.user;
             setUserName(username);
         }
@@ -27,7 +27,7 @@ const Login = () => {
     }
 
     const loginUser = async () => {
-        const res = await axios.post(`/login`,
+        const res = await axios.post(`${rootAddress}/login`,
             {
                 username: usernameInput,
                 password: passwordInput
