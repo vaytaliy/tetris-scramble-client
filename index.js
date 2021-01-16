@@ -14,7 +14,7 @@ const db = require('./db/index');
 const passport = require('passport');
 //const CookieStrategy = require('passport-cookie');//dont need
 const LocalStrategy = require('passport-local').Strategy;
-const { createProxyMiddleware } = require('http-proxy-middleware');
+//const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const registration = require('./routes/registration');
 const login = require('./routes/login');
@@ -22,8 +22,8 @@ const login = require('./routes/login');
 //====Set up of environment variables====
 // set env allowed origin 
 
-const allowedOrigin = 'https://tetriscramble.herokuapp.com';
-const serverurl = process.env.SERVER_URL || 'localhost';
+//const allowedOrigin = 'https://tetriscramble.herokuapp.com';
+//const serverurl = process.env.SERVER_URL || 'localhost';
 const port = process.env.PORT || 8079;
 
 //=======================================
@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 //app.use('**', createProxyMiddleware({ target: allowedOrigin, changeOrigin: true }));
 
-app.use(cors());
+//app.use(cors());
 //app.use(cors({origin: allowedOrigin, credentials: true}));
 //app.use(cors({ origin: allowedOrigin, credentials: true}));
 // app.use(express.urlencoded({
