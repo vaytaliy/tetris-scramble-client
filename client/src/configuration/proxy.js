@@ -1,5 +1,5 @@
 //Address parameters, change if needed
 
-const rootAddress = 'https://tetris-scramble-server.herokuapp.com'
+const rootAddress = 'https://tetriscramble.herokuapp.com/';
 
 export default rootAddress;
