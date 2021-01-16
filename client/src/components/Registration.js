@@ -15,12 +15,28 @@ const Registration = () => {
     }
 
     const sendRegisterUserForm = async () => {
-        const res = await axios.post(`${rootAddress}/register`,
-            {
-                username: usernameInput,
-                password: passwordInput
-            });
-        console.log(res);
+        const user = {
+            username: usernameInput,
+            password: passwordInput
+        }
+        
+        const res = await fetch(`${rootAddress}/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(user)
+        });
+        const parsedRes = await JSON.parse(res);
+        console.log(parsedRes);
+        
+        
+        // const res = await axios.post(`${rootAddress}/register`,          //axios implementation
+        //     {
+        //         username: usernameInput,
+        //         password: passwordInput
+        //     });
+        // console.log(res);
     }
 
     return (
