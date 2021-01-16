@@ -28,7 +28,7 @@ const Registration = () => {
             },
             body: JSON.stringify(user)
         });
-        //const parsedRes = await JSON.parse(res);
+        const parsedRes = await res.json();
         console.log(res);
         
         
