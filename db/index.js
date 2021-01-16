@@ -1,12 +1,18 @@
 const { Pool, Client } = require('pg');
 require('dotenv').config();
 
+// const pool = new Pool({
+//     user: process.env.DATABASE_USER,
+//     host: process.env.DATABASE_HOST,
+//     database: process.env.DATABASE_NAME,
+//     password: process.env.DATABASE_PASSWORD,       //set up these parameters manually on local db environment
+//     port: process.env.DATABASE_PORT
+// })
+
+const connectionString = process.env.MAIN_DB_URL || ''
+
 const pool = new Pool({
-    user: process.env.DATABASE_USER,
-    host: process.env.DATABASE_HOST,
-    database: process.env.DATABASE_NAME,
-    password: process.env.DATABASE_PASSWORD,       //set up these parameters manually on local db environment
-    port: process.env.DATABASE_PORT
+    connectionString,
 })
 
 const queryTable = async (text, params) => {
