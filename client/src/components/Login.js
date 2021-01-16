@@ -40,8 +40,8 @@ const Login = () => {
             },
             body: JSON.stringify(user)
         });
-        const parsedRes = await JSON.parse(res);
-        setUserName(parsedRes);
+        const username = res.data.user;
+        setUserName(username);
 
         // const res = await axios.post(`${rootAddress}/login`,     // axios implementation
         //     {
