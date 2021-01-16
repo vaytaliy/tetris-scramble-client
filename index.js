@@ -10,7 +10,7 @@ const io = require('socket.io')(http);
 const socketGame = require('./gameConnection/publicConnection/publicConnection');
 const bodyParser = require('body-parser');
 const { hashPassword, comparePassword } = require('./middleware/encrypt');
-const db = require('./db/index');
+
 const passport = require('passport');
 //const CookieStrategy = require('passport-cookie');//dont need
 const LocalStrategy = require('passport-local').Strategy;
@@ -19,23 +19,22 @@ const LocalStrategy = require('passport-local').Strategy;
 const registration = require('./routes/registration');
 const login = require('./routes/login');
 
-//====Set up of environment variables====
-// set env allowed origin 
-
-//const allowedOrigin = 'https://tetriscramble.herokuapp.com';
-//const serverurl = process.env.SERVER_URL || 'localhost';
-const port = process.env.PORT || 8079;
-
-//=======================================
-
 
 require('dotenv').config();
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-//app.use('**', createProxyMiddleware({ target: allowedOrigin, changeOrigin: true }));
+//====Set up of environment variables====
+// set env allowed origin 
 
+
+//const serverurl = process.env.SERVER_URL || 'localhost';
+const port = process.env.PORT || 8079;
+const allowedOrigin = process.env.ALLOWED_ORIGIN || `localhost:${port}`;
+//=======================================
+//app.use('**', createProxyMiddleware({ target: allowedOrigin, changeOrigin: true }));
+const db = require('./db/index');
 //app.use(cors());
-//app.use(cors({origin: allowedOrigin, credentials: true}));
+app.use(cors({origin: allowedOrigin, credentials: true}));
 //app.use(cors({ origin: allowedOrigin, credentials: true}));
 // app.use(express.urlencoded({
 //     extended: false
@@ -47,8 +46,8 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 //   next();
 // });
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({type: ['application/json', 'text/plain']}));
 
 app.use(cookieParser());
 app.use(cookieSession({
