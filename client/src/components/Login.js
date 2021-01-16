@@ -27,14 +27,29 @@ const Login = () => {
     }
 
     const loginUser = async () => {
-        const res = await axios.post(`${rootAddress}/login`,
-            {
-                username: usernameInput,
-                password: passwordInput
-            })
-        console.log(res);
-        const username = res.data.user;
-        setUserName(username);
+        const user = {
+            username: usernameInput,
+            password: passwordInput
+        }
+        
+        const res = await fetch(`${rootAddress}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(user)
+        });
+        const parsedRes = await JSON.parse(res);
+        setUserName(parsedRes);
+
+        // const res = await axios.post(`${rootAddress}/login`,     // axios implementation
+        //     {
+        //         username: usernameInput,
+        //         password: passwordInput
+        //     })
+        // console.log(res);
+        // const username = res.data.user;
+        // setUserName(username);
     }
 
     return (
