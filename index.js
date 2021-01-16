@@ -5,6 +5,7 @@ const cookieSession = require('cookie-session');
 const cookieParser = require('cookie-parser');
 const http = require('http').createServer(app);
 const cors = require('cors');
+const path = require('path');
 const io = require('socket.io')(http);
 const socketGame = require('./gameConnection/publicConnection/publicConnection');
 const bodyParser = require('body-parser');
@@ -27,8 +28,9 @@ const port = process.env.PORT || 8079;
 
 //=======================================
 
+
 require('dotenv').config();
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 //app.use('**', createProxyMiddleware({ target: allowedOrigin, changeOrigin: true }));
 
