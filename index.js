@@ -118,5 +118,5 @@ app.use(login);
 
 
 http.listen(port, () => {
-    console.log(`listening on port ${port}, server address: ${serverurl}`);
+    console.log(`listening on port ${port});
 });
