@@ -34,6 +34,7 @@ const Login = () => {
         
         const res = await fetch(`${rootAddress}/login`, {
             method: 'POST',
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
