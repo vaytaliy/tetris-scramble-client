@@ -1,5 +1,5 @@
 //Address parameters, change if needed
 
-const rootAddress = 'https://tetriscramble.herokuapp.com'
+const rootAddress = 'http://localhost:8079'
 
 export default rootAddress;

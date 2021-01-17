@@ -3,23 +3,12 @@ import React, { useState, useEffect } from 'react';
 import rootAddress from './../configuration/proxy';
 
 const Login = () => {
-    const [usernameInput, setUsernameInput] = useState('');
+    const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
     const [userName, setUserName] = useState('');
 
-    //receives information needed on component load
-
-    useEffect(() => {
-        const getRoot = async () => {
-            const res = await axios.get(`${rootAddress}/`)
-            const username = res.data.user;
-            setUserName(username);
-        }
-        getRoot();
-    }, [])
-
-    const handleUsernameChange = (newValue) => {
-        setUsernameInput(newValue);
+    const handleEmailChange = (newValue) => {
+        setEmailInput(newValue);
     }
 
     const handlePasswordChange = (newValue) => {
@@ -27,32 +16,30 @@ const Login = () => {
     }
 
     const loginUser = async () => {
-        const user = {
-            username: usernameInput,
+        const requestBody = {
+            email: emailInput,
             password: passwordInput
         }
         
-        const res = await fetch(`${rootAddress}/login`, {
+        const res = await fetch(`${rootAddress}/api/v1/auth/login`, {
             method: 'POST',
-            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify(requestBody)
         });
-        const parsedData = await res.json();
-        console.log(parsedData);
-        const username = parsedData.data.user;
-        setUserName(username);
 
-        // const res = await axios.post(`${rootAddress}/login`,     // axios implementation
-        //     {
-        //         username: usernameInput,
-        //         password: passwordInput
-        //     })
-        // console.log(res);
-        // const username = res.data.user;
-        // setUserName(username);
+        if (res.status === 200)
+        {
+            const payload = await res.json();
+
+            localStorage.setItem('bearer-token', payload.token);
+        }
+        else
+        {
+            // TODO: Add better error handling towards the user.
+            console.error(`Not good ${res}`);    
+        }
     }
 
     return (
@@ -61,8 +48,8 @@ const Login = () => {
                 Login
             <br />
             <div>
-                <label>Username</label>
-                <input type="text" value={usernameInput} onChange={(e) => handleUsernameChange(e.target.value)} />
+                <label>Email</label>
+                <input type="text" value={emailInput} onChange={(e) => handleEmailChange(e.target.value)} />
             </div>
             <div>
                 <label>Password</label>

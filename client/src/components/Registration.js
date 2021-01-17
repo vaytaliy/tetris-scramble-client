@@ -20,7 +20,7 @@ const Registration = () => {
             password: passwordInput
         }
         
-        const res = await fetch(`${rootAddress}/register`, {
+        const res = await fetch(`${rootAddress}/api/v1/register`, {
             method: 'POST',
             mode: 'no-cors',
             headers: {
