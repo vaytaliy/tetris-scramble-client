@@ -24,9 +24,10 @@ const Registration = () => {
         {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json;charset=utf-8'
+                'Accept': 'application/json, text/plain',
+                'Content-Type': 'application/json;charset=utf-8',
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify(user),
         });
         const parsedRes = await res.json();
         console.log(parsedRes);

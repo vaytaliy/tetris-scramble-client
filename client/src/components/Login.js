@@ -27,28 +27,27 @@ const Login = () => {
         const res = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json;charset=utf-8'
+                'Accept': 'application/json, text/plain',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(requestBody)
         });
 
-        if (res.status === 200)
-        {
+        if (res.status === 200) {
             const payload = await res.json();
             localStorage.setItem('bearer-token', payload.token);
             console.log('Logged in.');
         }
-        else
-        {
+        else {
             // TODO: Add better error handling towards the user.
-            console.error(`Not good ${res}`);    
+            console.error(`Not good ${res}`);
         }
     }
 
     return (
         <div>
             <br />
-                Login
+            Login
             <br />
             <div>
                 <label>Email</label>
