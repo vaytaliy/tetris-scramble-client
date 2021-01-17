@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import rootAddress from './../configuration/proxy';
+require('dotenv').config();
 
 const Login = () => {
     const [emailInput, setEmailInput] = useState('');
@@ -20,8 +20,11 @@ const Login = () => {
             email: emailInput,
             password: passwordInput
         }
-        
-        const res = await fetch(`${rootAddress}/api/v1/auth/login`, {
+
+        console.log(process.env);
+
+        const endpoint = `${process.env.REACT_APP_API_BASE_ADDRESS}/api/v1/auth/login`
+        const res = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
@@ -32,8 +35,8 @@ const Login = () => {
         if (res.status === 200)
         {
             const payload = await res.json();
-
             localStorage.setItem('bearer-token', payload.token);
+            console.log('Logged in.');
         }
         else
         {

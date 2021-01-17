@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import rootAddress from './../configuration/proxy';
 
 const Registration = () => {
     const [usernameInput, setUsernameInput] = useState('');
@@ -20,9 +19,10 @@ const Registration = () => {
             password: passwordInput
         }
         
-        const res = await fetch(`${rootAddress}/api/v1/register`, {
+        const endpoint = `${process.env.REACT_APP_API_BASE_ADDRESS}/api/v1/register`
+        const res = await fetch(endpoint, 
+        {
             method: 'POST',
-            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
