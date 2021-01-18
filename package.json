@@ -6,8 +6,9 @@
   "scripts": {
     "heroku-postbuild": "cd client && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cd client && npm install && npm run build",
-    "start": "node index.js"
+    "setup": "npm install && cd client && npm install && npm run build",
+    "start": "node index.js",
+    "dev": "cross-env JWT_SECRET=secret123 REACT_CLIENT_ORIGIN=http://localhost:3000 DATABASE_URL=postgres://tetris_admin:123@localhost:5432/tetris_scramble_dev node index.js"
   },
   "author": "Vitaliy Zhidkikh",
   "contributors": [],
@@ -31,5 +32,8 @@
     "sequelize": "^6.3.5",
     "socket.io": "^3.0.4",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }

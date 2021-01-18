@@ -26,6 +26,7 @@ const Login = () => {
         const endpoint = `${process.env.REACT_APP_API_BASE_ADDRESS}/api/v1/auth/login`
         const res = await fetch(endpoint, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json, text/plain',
                 'Content-Type': 'application/json',

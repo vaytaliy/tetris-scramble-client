@@ -1,0 +1,23 @@
+
+Those are:
+2 - Install PostgresDB (and pgadmin) if you haven't already.
+- Set up environment variables above to connect to the database and API.
+   - Example of database connectionstring: 
+   `postgres://user:pass@localhost:5432/dbname`
+2.1 Create .env file in server directory 
+	DATABASE_URL = <database-connection-string>
+- Install sequelize CLI using `npm install -g sequelize-cli`.
+- Run `sequelize db:migrate` to apply the latest database changes.
+1. in root folder open cli and run "npm run dev". That will build both backend and
+frontend and populate it with environment variables that can be changed manually (for client - in client root dir, server - server root dir).
+	Those default variables are:
+	
+	*client*:
+	REACT_APP_API_BASE_ADDRESS=http://localhost:8079
+
+	*server*:
+	JWT_SECRET=asm424rsfcsr34fw34cftw4oSDs9dsNSONds
+	REACT_CLIENT_ORIGIN=http://localhost:3000
+
+3.run "node index.js" from root folder to start server
+4.run "npm start" from client folder to start client

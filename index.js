@@ -8,26 +8,22 @@ const cookieParser = require('cookie-parser');
 const http = require('http').createServer(app);
 const cors = require('cors');
 const path = require('path');
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+  cors: {
+    origin: process.env.REACT_CLIENT_ORIGIN,
+    methods: ['GET', 'POST']
+  }
+});
 const socketGame = require('./gameConnection/publicConnection/publicConnection');
 const bodyParser = require('body-parser');
-const { hashPassword, comparePassword } = require('./middleware/encrypt');
-
 const passport = require('./routes/authorization/passport');
-//const CookieStrategy = require('passport-cookie');//dont need
-
-//const { createProxyMiddleware } = require('http-proxy-middleware');
-
 const registration = require('./routes/registration');
 const login = require('./routes/login');
 const user = require('./routes/user');
-
 const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize(process.env.DATABASE_URL); // Example for postgres
 
-
-app.use(express.static(path.join(__dirname, 'client/build')));
-
+//app.use(express.static(path.join(__dirname, 'client/build')));
 
 try {
     sequelize.authenticate()
@@ -38,32 +34,11 @@ try {
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
-//====Set up of environment variables====
-// set env allowed origin 
 
-
-//const serverurl = process.env.SERVER_URL || 'localhost';
 const port = process.env.PORT || 8079;
-const allowedOrigin = process.env.ALLOWED_ORIGIN || `localhost:${port}`;
-//=======================================
-//app.use('**', createProxyMiddleware({ target: allowedOrigin, changeOrigin: true }));
-
-app.use(cors());
-//app.use(cors({origin: allowedOrigin, credentials: true}));
-//app.use(cors({ origin: allowedOrigin, credentials: true}));
-// app.use(express.urlencoded({
-//     extended: false
-// }));
-
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
-
+app.use(cors({origin: process.env.REACT_CLIENT_ORIGIN, credentials: false}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({type: ['application/json', 'text/plain']}));
-
 app.use(cookieParser());
 app.use(cookieSession({
     name: 'session',
@@ -77,16 +52,12 @@ app.use(passport.session());
 
 socketGame.socketConnection(io); //global socketio object with all data carried by it
 
-// app.get('/game', (req, res) => {
-//     res.render('gamepage.ejs');      //ejs wont be used, react instead
-// });
-
 // app.get('/', (req, res) => {
 //     console.log(req.user);
 //     if (!req.user) {
 //         respUser = 'none'
 //     } else {
-//         respUser = req.user.username;
+//         respUser = req.user.username;                        //if user is deserialized successfuly, it is returned to the client
 //     }
 //     res.json({ message: 'ok', code: 200, user: respUser });
 // })
