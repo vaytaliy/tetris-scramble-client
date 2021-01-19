@@ -1,11 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
 
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
-    console.log(req.user);
-    res.redirect('/');
-})
+/* POST login. */
+router.post('/login', function (req, res, next) {
+    passport.authenticate('local', {session: false}, (err, user, info) => {
+        if (err || !user) {
+            return res.status(400).json({
+                message: 'Invalid credentials.'
+            });
+        }
+       req.login(user, {session: false}, (err) => {
+           if (err) {
+               res.send(err);
+           }
+           // generate a signed son web token with the contents of user object and return it in the response
+           const token = jwt.sign(user.id, process.env.JWT_SECRET);
+           return res.json({token});
+        });
+    })(req, res);
+});
 
 module.exports = router;

@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from 'axios'; 
 import React, { useState } from 'react';
-import rootAddress from './../configuration/proxy';
 
 const Registration = () => {
     const [usernameInput, setUsernameInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
+    const [emailInput, setEmailInput] = useState('');
 
     const handleUsernameChange = (newValue) => {
         setUsernameInput(newValue);
@@ -14,14 +14,22 @@ const Registration = () => {
         setPasswordInput(newValue);
     }
 
+    const handleEmailChange = (newValue) => {
+        setEmailInput(newValue);
+    }
+
     const sendRegisterUserForm = async () => {
         const user = {
             username: usernameInput,
-            password: passwordInput
+            password: passwordInput,
+            email: emailInput
         }
         
-        const res = await fetch(`${rootAddress}/register`, {
+        const endpoint = `${process.env.REACT_APP_API_BASE_ADDRESS}/api/v1/auth/register`
+        const res = await fetch(endpoint, 
+        {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json, text/plain',
                 'Content-Type': 'application/json;charset=utf-8',
@@ -30,14 +38,6 @@ const Registration = () => {
         });
         const parsedRes = await res.json();
         console.log(parsedRes);
-        
-        
-        // const res = await axios.post(`${rootAddress}/register`,          //axios implementation
-        //     {
-        //         username: usernameInput,
-        //         password: passwordInput
-        //     });
-        // console.log(res);
     }
 
     return (
@@ -52,6 +52,10 @@ const Registration = () => {
             <div>
                 <label>Password</label>
                 <input type="password" value={passwordInput} onChange={(e) => handlePasswordChange(e.target.value)} />
+            </div>
+            <div>
+                <label>Email</label>
+                <input type="email" value={emailInput} onChange={(e) => handleEmailChange(e.target.value)} />
             </div>
             <button onClick={sendRegisterUserForm}>Submit</button>
         </div>

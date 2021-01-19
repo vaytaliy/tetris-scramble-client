@@ -1,25 +1,14 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import rootAddress from './../configuration/proxy';
+require('dotenv').config();
 
 const Login = () => {
-    const [usernameInput, setUsernameInput] = useState('');
+    const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
     const [userName, setUserName] = useState('');
 
-    //receives information needed on component load
-
-    useEffect(() => {
-        const getRoot = async () => {
-            const res = await axios.get(`${rootAddress}/`)
-            const username = res.data.user;
-            setUserName(username);
-        }
-        getRoot();
-    }, [])
-
-    const handleUsernameChange = (newValue) => {
-        setUsernameInput(newValue);
+    const handleEmailChange = (newValue) => {
+        setEmailInput(newValue);
     }
 
     const handlePasswordChange = (newValue) => {
@@ -27,40 +16,43 @@ const Login = () => {
     }
 
     const loginUser = async () => {
-        const user = {
-            username: usernameInput,
+        const requestBody = {
+            email: emailInput,
             password: passwordInput
         }
-        
-        const res = await fetch(`${rootAddress}/login`, {
+
+        console.log(process.env);
+
+        const endpoint = `${process.env.REACT_APP_API_BASE_ADDRESS}/api/v1/auth/login`
+        const res = await fetch(endpoint, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json, text/plain',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(user),
+            body: JSON.stringify(requestBody)
         });
-        const parsedRes = await res.json();
-        setUserName(parsedRes);
 
-        // const res = await axios.post(`${rootAddress}/login`,     // axios implementation
-        //     {
-        //         username: usernameInput,
-        //         password: passwordInput
-        //     })
-        // console.log(res);
-        // const username = res.data.user;
-        // setUserName(username);
+        if (res.status === 200) {
+            const payload = await res.json();
+            localStorage.setItem('bearer-token', payload.token);
+            console.log('Logged in.');
+        }
+        else {
+            // TODO: Add better error handling towards the user.
+            console.error(`Not good ${res}`);
+        }
     }
 
     return (
         <div>
             <br />
-                Login
+            Login
             <br />
             <div>
-                <label>Username</label>
-                <input type="text" value={usernameInput} onChange={(e) => handleUsernameChange(e.target.value)} />
+                <label>Email</label>
+                <input type="text" value={emailInput} onChange={(e) => handleEmailChange(e.target.value)} />
             </div>
             <div>
                 <label>Password</label>
