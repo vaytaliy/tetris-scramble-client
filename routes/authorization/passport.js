@@ -15,11 +15,11 @@ passport.use(new LocalStrategy({
     try {
 
         const user = await models.User.findOne({
-            where: { email: username },
+            where: { username: username },
         });
         
         if (!user) {
-            console.log(`User with username {username} does not exist.`);
+            console.log(`User with username ${username} does not exist.`);
             return done('null', false);
         } else {
             const isValid = await comparePassword(password, user.password);
