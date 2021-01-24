@@ -15,6 +15,29 @@ const Login = () => {
         setPasswordInput(newValue);
     }
 
+    const getInfoOnLoggedUser = async () => {
+        const endpoint = `${process.env.REACT_APP_API_BASE_ADDRESS}/api/v1/user/greeting`
+        const res = await fetch(endpoint, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json, text/plain',
+                'Authorization': `Bearer ${localStorage['bearer-token']}`,
+                'Content-Type': 'application/json',
+            }
+        });
+        const payload = await res.json();
+        console.log(payload);
+
+        if (res.status === 200) {
+            console.log('works ok');
+        }
+        else {
+            // TODO: Add better error handling towards the user.
+            console.error(`Not good ${res}`);
+        }
+    }
+
     const loginUser = async () => {
         const requestBody = {
             email: emailInput,
@@ -60,6 +83,7 @@ const Login = () => {
             </div>
             <button onClick={loginUser}>Log in</button>
             <div>The user is {userName}</div>
+            <button onClick={getInfoOnLoggedUser}>Logged in test</button>
         </div>
     );
 };
