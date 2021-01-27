@@ -9,8 +9,11 @@ const models = require("../database/models/index");
 const getPlayersCounter = require('./notification');
 const handlePublicConnection = require('./game/publicConnection/publicConnection');
 
+const [useRoom] = require('./roomSets');
+
+
 const getUser = (socket) => {
-    let user = { id: 'none' };
+    let user = { id: 'none' , activeRooms: new Set()};
 
     if (socket.user) {
         user = socket.user;
@@ -23,21 +26,21 @@ const clearActiveConnectionsExceptId = async (newActiveSocketId, io, id) => {
 
     let socketIds = await io.of('/').in(`activeConnections-${id}`).sockets;
 
-
-    socketIds.forEach(async (socketId) => {
-
+    await socketIds.forEach(async (socketId) => {
         let currentSocket = await io.of('/').in(`activeConnections-${id}`).sockets.get(socketId.id);
-        currentSocket.user.isActiveSession = false;
 
+        if (currentSocket && currentSocket.user) {
+            currentSocket.user.isActiveSession = false;
+        }
         if (currentSocket.id !== newActiveSocketId) {
             currentSocket.emit('session-active-in-another-tab');
         }
     })
-    try {
-        const foundSocket = await io.of('/').in(`activeConnections-${id}`).sockets.get(newActiveSocketId);
+
+    const foundSocket = await io.of('/').in(`activeConnections-${id}`).sockets.get(newActiveSocketId);
+
+    if (foundSocket && foundSocket.user) {
         foundSocket.user.isActiveSession = true;
-    } catch (err) {
-        console.log(err.message);
     }
 }
 
@@ -47,7 +50,7 @@ const findUser = (socket, deserializedId, io) => {
     })
         .then(user => {
             const { id, username } = user;
-            socket.user = { id, username, isActiveSession: false };
+            socket.user = { id, username, isActiveSession: false, activeRooms: new Set() };
             socket.join(`activeConnections-${id}`); // <-- add socket to room of connections related to this specific user
             clearActiveConnectionsExceptId(socket.id, io, id);
         })
@@ -73,6 +76,27 @@ const verifyAndFindUser = (token, socket, io) => {
 
 const hub = (io) => {
 
+    //=====
+    //types of rooms that should be returned
+    //=====
+
+    // pbg - public 1v1 game                // 2 ppl
+    // invg - invitation 1v1 game           // 2 ppl
+    // off1p - one player game in offline   // 1 pers
+    // off2p - two player game in offline   // 2 ppl
+    // randtr - random tournament game      // any ???
+    // custr - custom tournament game       // any
+    console.log('use');
+    useRoom([
+        'pbg',
+        'invg',
+        'off1p',
+        'off2p',
+        'randtr',
+        'custr'
+    ], io);
+
+
     io.use((socket, next) => {
         let token = socket.handshake.query.token;
 
@@ -84,6 +108,7 @@ const hub = (io) => {
         verifyAndFindUser(token, socket, io);
         next();
     })
+
 
     io.on('connection', socket => {
 
@@ -112,7 +137,7 @@ const hub = (io) => {
 
             try {
                 await clearActiveConnectionsExceptId(socket.id, io, user.id);
-                // io.of('/').sockets.get(socket.id).isActiveSession = true;
+
             } catch (err) {
                 console.log(err.message);
             }
@@ -120,6 +145,7 @@ const hub = (io) => {
 
         socket.on('request-random-game', () => {
             const user = getUser(socket);
+            //console.log('requested random game' + socket.id)
             handlePublicConnection(io, socket, user);
         });
     })

@@ -1,9 +1,8 @@
-const { disconnectRoom, initGame } = require('./roomHandler');
-const playOnline = require('../gameConnection/activeGame/playOnline')
+const { disconnectRoom, initPublicGame } = require('./roomHandler');
+const playGame = require('../gameConnection/activeGame/playOnline')
 
 const checkSameUserHasAlreadyConnected = async (io, connectedSocket, roomName) => { // <-- this function can be reused for other types of gamemodes
-    let socketIds = io.sockets.adapter.rooms.get(roomName);
-    //const socketIds = io.sockets.adapter.rooms.get(roomName).sockets;
+    let socketIds = io.sockets.adapter.rooms.get(roomName); //<-- only this one properly retreives needed sockets
     let isFound = false;
 
     if (socketIds) {
@@ -21,43 +20,48 @@ const checkSameUserHasAlreadyConnected = async (io, connectedSocket, roomName) =
 
 const handlePublicConnection = async (io, socket, user) => {
 
-    if (!socket.user.isActiveSession) {
+    if (socket && socket.user && !socket.user.isActiveSession) {
         socket.emit('session-active-in-another-tab');
         return;
     }
 
     let res = await checkSameUserHasAlreadyConnected(io, socket, 'publicRoom');
-    console.log('The same player is trying to connect twice');
-    
-    if (res) {
-        socket.emit('only-one-game-at-a-time');     // <-- comment out this piece of code to be able to test multiple connections
-        return;                                     // otherwise you will only be able to connect to a game once
-    }
+    //console.log('The same player is trying to connect twice');
 
-    let publicRoom = io.sockets.adapter.rooms.get('publicRoom');
-    let publicRoomSize = 0; //if room doesnt exist its size is 0
+    //if (res) {
+    //    socket.emit('only-one-game-at-a-time');     // <-- comment out this piece of code to be able to test multiple connections
+    //    return;                                     // otherwise you will only be able to connect to a game once
+    //}
+
+    let publicRoom = 0;
+
+    if (await io.of('/').in('publicRoom').allSockets()) {
+        publicRoom = await io.of('/').in('publicRoom').allSockets();
+    }
 
     if (publicRoom) {
         publicRoomSize = publicRoom.size;      //if room exists get real size
-    }
-    console.log(publicRoomSize);
-
-    if (publicRoomSize <= 1) {
-        socket.join('publicRoom');
+    } else {
+        publicRoomSize = 0
     }
 
-    publicRoomSize = io.sockets.adapter.rooms.get('publicRoom').size; //update size after connection
+    if (publicRoomSize <= 1) {          //if the room is empty or there is already someone
+        socket.join('publicRoom');      
+    }
+
+    publicRoom = await io.of('/').in('publicRoom').allSockets(); //update size after connection
+    publicRoomSize = publicRoom.size;
 
     if (publicRoomSize === 1) {    //wait new connection
-        console.log('clients in public room', io.sockets.adapter.rooms.get('publicRoom'))
+        console.log('clients in public room', await io.of('/').in('publicRoom').allSockets())
         console.log('searching for players...');
         socket.emit('attempt-random-game-reconnect', { message: "searching for players" });
     }
 
     else if (publicRoomSize === 2) {
-        console.log('Public room is full', io.sockets.adapter.rooms.get('publicRoom'))
-        const [connectedSockets, roomId] = initGame(io); //server takes control of initializing the game for players from public room
-        playOnline(connectedSockets, roomId);
+        console.log('Public room is full', await io.of('/').in('publicRoom').allSockets())
+        const [connectedSockets, roomId] = await initPublicGame(io); //server takes control of initializing the game for players from public room
+        playGame(socket, connectedSockets, roomId);
     }
 }
 

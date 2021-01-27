@@ -5,9 +5,19 @@
 // offline practice mode
 // 1v1 in tournaments
 
-const onlineGame = (sockets, roomId) => {
-    
+
+
+const playGame = (socket, sockets, roomId) => {
+
     //everything related to game logic itself goes in here
-    
-    console.log('');
+
+    console.log('now the game is officially running!');
+
+
+    socket.on('disconnect', () => {
+        console.log('handle the game on disconnect!');
+    })
+
 }
+
+module.exports = playGame;
