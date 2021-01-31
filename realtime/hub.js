@@ -9,11 +9,11 @@ const models = require("../database/models/index");
 const getPlayersCounter = require('./notification');
 const handlePublicConnection = require('./game/publicConnection/publicConnection');
 
-const [useRoom] = require('./roomSets');
+const [useRoom, trackRoom] = require('./roomSets');
 
 
 const getUser = (socket) => {
-    let user = { id: 'none' , activeRooms: new Set()};
+    let user = { id: 'none', activeRooms: new Set() };
 
     if (socket.user) {
         user = socket.user;
@@ -109,6 +109,10 @@ const hub = (io) => {
         next();
     })
 
+    // main
+    // connection, disconnection
+    // getting user info
+    // main place for game events. to avoid clutter those events are handled in other functions
 
     io.on('connection', socket => {
 
@@ -117,12 +121,23 @@ const hub = (io) => {
             socket.emit('receive-active-players', data);
         });
 
-        socket.on('disconnect', () => {
-            const user = getUser(socket);
+        socket.on('disconnect', () => {                 //<-- this handles disconnect for any room
+            const user = getUser(socket);               //<-- not used to handle disconnect in each individual rooms
+            const rooms = socket.user.activeRooms;
 
-            if (user.isActiveSession) {
-                verifyAndFindUser(socket.handshake.query.token, socket, io)  //<-- update active tab
-            }
+            console.log(rooms);
+            rooms.forEach(room => {
+                let namespace = room.split('-')[0];
+                let roomId = room.slice(namespace.length + 1);
+
+                console.log(namespace);
+
+                try {
+                    trackRoom(namespace, roomId);
+                } catch(err) {
+                    console.log(err.message);
+                }
+            })
 
             console.log(`The user ${user.username} disconnected`); // <-- [TBD] must send this notification to others if client was in a game on disconnect            
         });

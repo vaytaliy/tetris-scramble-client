@@ -22,11 +22,11 @@ const trackRoom = (namespace, roomId) => {
     roomList.get(namespace).handleRoom(roomId);
 }
 
-const trackAll = () => {
-    for (let namespace of roomList.keys()){
-        namespace.handle
-    }
-}
+// const trackAll = () => {
+//     for (let namespace of roomList.keys()){
+//         namespace.handle
+//     }
+// }
 
 //represents a namespace which stores subset of rooms
 //and handles them
@@ -60,18 +60,6 @@ class RoomNamespace {
             }
         } 
     }
-
-    getAllRoomNames() {
-
-        for (let room in this.roomsInSet) {
-            //[TBD]
-        }
-    }
-
-    async isEmpty() {
-        return this.roomsInSet.size;
-    }
-
 }
 
 module.exports = [useRoom, RoomNamespace, roomList, trackRoom]

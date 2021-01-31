@@ -30,7 +30,7 @@ const handlePublicConnection = async (io, socket, user) => {
 
     //if (res) {
     //    socket.emit('only-one-game-at-a-time');     // <-- comment out this piece of code to be able to test multiple connections
-    //    return;                                     // otherwise you will only be able to connect to a game once
+    //    return;                                     // otherwise you will only be able to connect to a game once with same user
     //}
 
     let publicRoom = 0;
@@ -46,7 +46,7 @@ const handlePublicConnection = async (io, socket, user) => {
     }
 
     if (publicRoomSize <= 1) {          //if the room is empty or there is already someone
-        socket.join('publicRoom');      
+        socket.join('publicRoom');
     }
 
     publicRoom = await io.of('/').in('publicRoom').allSockets(); //update size after connection
@@ -61,7 +61,22 @@ const handlePublicConnection = async (io, socket, user) => {
     else if (publicRoomSize === 2) {
         console.log('Public room is full', await io.of('/').in('publicRoom').allSockets())
         const [connectedSockets, roomId] = await initPublicGame(io); //server takes control of initializing the game for players from public room
-        playGame(socket, connectedSockets, roomId);
+        const socketIds = await io.of('/').in(roomId).allSockets();
+        const sockets = new Set();
+
+        //this below is probably the best way to get clients from room....
+        //[TBD] repeats 10000 times in code, must add/redo in helper function
+
+        await socketIds.forEach(async socketId => {
+            let foundSocket = await io.of('/').in(roomId).sockets.get(socketId);
+            sockets.add(foundSocket);
+        })
+
+        playGame(socket, sockets, roomId, io, {
+            timer: 30,
+            rounds: 3,
+            isRanked: false
+        });
     }
 }
 
