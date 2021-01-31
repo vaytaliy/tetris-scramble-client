@@ -1,0 +1,20 @@
+.field {
+    border-color: black;
+    /* min-width: 200px;
+    min-height: 400px; */
+    height: 400px;
+    width: 200px;
+    display: inline-flex;
+    /* max-width: 400px;
+    max-height: 800px; */
+    border-style: solid;
+    position: relative;
+}
+
+.cell {
+    position: absolute;
+    border-color: black;
+    width: 20px;
+    height: 20px;
+    border-style: solid;
+}

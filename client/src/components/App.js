@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import Registration from './Registration';
 import Login from './Login';
 import io from 'socket.io-client';
+import '../styles/game.css';
+import { parse } from 'uuid';
 //import join from '../game/online/publicRoom'; <-- test this by adding some button
 
 // Root container for every other component/ component group.
@@ -10,24 +12,62 @@ import io from 'socket.io-client';
 //too lengty and too detailed
 let socket;
 let timeout;
+let canContinueMashingButtons = false;
 
 const App = () => {
 
     const [activePlayers, setActivePlayers] = useState(0);
+    const [elemPosition, setElemPosition] = useState(0); //purely for test purposes
+    const [elemPosition2, setElemPosition2] = useState(0); //purely for test purposes 
+    const [gameTimer, setGameTimer] = useState(0); 
 
     useEffect(() => {
         join();
     }, []);
 
+    //must be moved to another file
+    const onlineGame = (socket, data) => {
+        const { sockets, roomId } = data;
+
+        let positionY = 0;
+
+
+        socket.on('game-update-tick', (data) => {
+            console.log(data);
+            canContinueMashingButtons = true;
+            let newPos = elemPosition + parseInt(data.position);
+            
+            console.log(data.socketId, ':', socket.id)
+            if (data.socketId == socket.id) {          
+                setElemPosition(newPos);
+            } else {
+                setElemPosition2(newPos);
+            }
+
+            //TBD handle keypresses 
+            console.log('game tick');
+        })
+
+        socket.on('game-update-timer', (data) => {
+            setGameTimer(data.timer);
+        })
+
+    }
+
     const join = () => {
+
+        // move this to online game function. And this request
+        // should be sent on any press for precision regardless on where timeout is on the server atm
+        document.addEventListener('keydown', (e) => {
+            console.log(e.key);
+            if (e.key === 'ArrowDown' && canContinueMashingButtons) {
+                canContinueMashingButtons = false;
+                socket.emit('input-listen-update', { speedUpKeyPressed: true })
+            }
+        })
 
         socket = io(process.env.REACT_APP_API_BASE_ADDRESS, {
             reconnectionDelayMax: 10000,
-            // auth: (cb) => {
-            //     cb({
-            //         token: localStorage['bearer-token']
-            //     });
-            // }
             query: {
                 token: localStorage['bearer-token']
             }
@@ -81,6 +121,7 @@ const App = () => {
         socket.on('matchmaking-success', (data) => {
             console.log('opponent has been found successfully');
             console.log('The room is: ' + data.roomId);
+            onlineGame(socket, data);
         })
     }
 
@@ -122,6 +163,16 @@ const App = () => {
             <div>{activePlayers}</div>
             <Registration />
             <Login />
+            <div>Time remaining {gameTimer}</div>
+            <div className='game'>
+                <div className='field p1'>
+                    {/* these cells and their quantities will be dynamically rendered */}
+                    <div className='cell' style={{ left: 0, top: elemPosition }}></div>
+                </div>
+                <div className='field p2'>
+                    <div className='cell' style={{ left: 0, top: elemPosition2 }}></div>
+                </div>
+            </div>
         </div>
     );
 };
